@@ -1,177 +1,154 @@
 'use strict';
-/* VELARIS — app.js · Cosmos + Catálogo + Concierge + Admin */
-const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const E=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const CATS=['Relojes','Chaquetas','Camisetas','Gafas','Accesorios'];
-const SUB={Relojes:'Haute Horlogerie',Chaquetas:'Atelier Outerwear',Camisetas:'Essential Luxury',Gafas:'Eyewear Couture',Accesorios:'Leather & Fine Goods'};
-const ASP=['Vista frontal','Detalle del material','Acabado artesanal','Perfil lateral','Firma de la maison','Interior y forro','En contexto','Presentación y estuche'];
-const DET=['Silueta concebida en nuestro atelier.','Materia prima seleccionada con trazabilidad completa.','Acabado a mano por un único maestro artesano.','Proporciones equilibradas para una caída impecable.','Firma VELARIS grabada con discreción.','Interior cuidado con el mismo rigor que el exterior.','Diseñada para acompañar cada ocasión con discreción.','Entrega en estuche numerado con certificado de autenticidad.'];
-const TPL='Estimado Concierge de VELARIS, solicito asistencia exclusiva para la pieza {nombre} (Ref: {sku}) de la colección {categoria}. Deseo coordinar los detalles de personalización y reserva privada. Quedo a su entera disposición.';
-const INTRO='Estimado Concierge de VELARIS, solicito asistencia exclusiva para las siguientes piezas:';
-const ph=(t,i)=>'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0F0F0F"/><stop offset="1" stop-color="hsl(${38+i*6},40%,22%)"/></linearGradient></defs><rect width="800" height="1000" fill="url(#g)"/><rect x="36" y="36" width="728" height="928" fill="none" stroke="#E6CA65" stroke-opacity=".45"/><text x="400" y="500" fill="#D4AF37" font-family="Georgia,serif" font-size="52" text-anchor="middle">${t}</text><text x="400" y="560" fill="#FDFDFB" font-size="26" text-anchor="middle" opacity=".6">0${i+1} / 08</text></svg>`);
-const SP=[['Relojes','Calibre Nocturne','VLR-001',18900,'oro rosa 18k y cristal de zafiro'],['Relojes','Tourbillon Aurea','VLR-002',42500,'platino y esfera de meteorito'],['Chaquetas','Biker Obsidiana','VCH-001',3450,'piel de cordero napa'],['Chaquetas','Abrigo Cachemir Noir','VCH-002',4900,'cachemira doble faz'],['Camisetas','Tee Mercerizada','VCA-001',390,'algodón egipcio mercerizado'],['Camisetas','Polo Seda Ivoire','VCA-002',520,'seda y algodón pima'],['Gafas','Aviator Champán','VGA-001',840,'titanio chapado en oro 18k'],['Gafas','Clubmaster Carey','VGA-002',690,'acetato italiano'],['Accesorios','Cartera Bespoke','VAC-001',1250,'piel de becerro de curtición vegetal'],['Accesorios','Foulard Seda Oro','VAC-002',480,'sarga de seda estampada a mano']];
-const mk=(a,n)=>({id:'p'+n,cat:a[0],name:a[1],sku:a[2],price:a[3],cur:'EUR',stock:3,desc:'Pieza de la colección '+SUB[a[0]]+'.',imgs:ASP.map((t,i)=>({src:ph(a[1],i),txt:`${t} — ${a[1]}. Confeccionado en ${a[4]}. ${DET[i]}`}))});
-const seed=()=>({cfg:{phone:'34602006585',user:'123',pass:'123',tpl:TPL,intro:INTRO,hv:'',hi:'',title:'El arte de lo irrepetible',sub:'Ultra Boutique · Colección Privada'},prods:SP.map(mk)});
-const money=(n,c)=>new Intl.NumberFormat('es-ES',{style:'currency',currency:c,maximumFractionDigits:0}).format(n);
+/* VELARIS · app.js · catálogo, reseñas, WhatsApp y panel privado */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],
+E=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),
+money=(n,c)=>new Intl.NumberFormat('es-ES',{style:'currency',currency:c,maximumFractionDigits:0}).format(n),
+CATS=[['Relojes','Alta relojería'],['Chaquetas','Abrigos y chaquetas'],['Gafas','Gafas de autor'],['Zapatos','Calzado de maison'],['Accesorios','Piel y complementos']],
+SUB=Object.fromEntries(CATS),
+FIELDS=[['brand','Nombre de la marca (arriba y abajo)'],['ann','Barra superior'],['title','Título de portada'],['sub','Subtítulo de portada'],['del','Plazo de entrega'],
+['t1','Garantía 1 (Título|Texto)'],['t2','Garantía 2 (Título|Texto)'],['t3','Garantía 3 (Título|Texto)'],['t4','Garantía 4 (Título|Texto)'],
+['s1','Paso 1 (Título|Texto)'],['s2','Paso 2 (Título|Texto)'],['s3','Paso 3 (Título|Texto)'],['s4','Paso 4 (Título|Texto)']],
+TPL='Estimado asesor de VELARIS, solicito asistencia exclusiva para la pieza {nombre} (Ref: {sku}) de la colección {categoria}. Deseo coordinar los detalles de personalización y reserva privada. Quedo a su entera disposición.',
+INTRO='Estimado asesor de VELARIS, solicito asistencia exclusiva para las siguientes piezas:',
+ICO={
+Relojes:'<rect x="345" y="170" width="110" height="220" rx="30"/><rect x="345" y="610" width="110" height="220" rx="30"/><circle cx="400" cy="500" r="150"/><circle cx="400" cy="500" r="124" fill="#07130f"/><circle cx="400" cy="500" r="104" fill="none" stroke="url(#g)" stroke-width="12" stroke-dasharray="3 51.45"/><path d="M400 500V430M400 500l50-28" stroke="url(#g)" stroke-width="9" stroke-linecap="round" fill="none"/><rect x="548" y="486" width="26" height="28" rx="6"/>',
+Chaquetas:'<path d="M310 220L400 190L490 220L650 340L610 480L545 445V790H255V445L190 480L150 340Z"/><path d="M400 195V790M360 215L400 300L440 215" fill="none" stroke="#07130f" stroke-width="6"/>',
+Gafas:'<rect x="150" y="430" width="230" height="160" rx="75"/><rect x="420" y="430" width="230" height="160" rx="75"/><rect x="172" y="452" width="186" height="116" rx="58" fill="#07130f"/><rect x="442" y="452" width="186" height="116" rx="58" fill="#07130f"/><path d="M380 480Q400 455 420 480M150 460L95 430M650 460L705 430" fill="none" stroke="url(#g)" stroke-width="12" stroke-linecap="round"/>',
+Zapatos:'<path d="M150 610V470Q150 440 185 440H330Q380 540 500 560Q660 575 690 650V710H150Z"/><path d="M150 690H690M320 470l40 30M360 450l40 40M400 470l30 20" stroke="#07130f" stroke-width="7" fill="none"/>',
+Accesorios:'<rect x="190" y="370" width="420" height="280" rx="26"/><path d="M190 470H610" stroke="#07130f" stroke-width="6"/><rect x="210" y="390" width="380" height="240" rx="16" fill="none" stroke="#07130f" stroke-width="3" stroke-dasharray="10 8"/><circle cx="400" cy="470" r="22" fill="#07130f"/>'},
+art=(c,i)=>'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000"><defs><radialGradient id="b" cx=".5" cy=".38" r=".8"><stop offset="0" stop-color="hsl(${156+i*7},36%,${19+i*2}%)"/><stop offset="1" stop-color="#06100c"/></radialGradient><linearGradient id="g" gradientUnits="userSpaceOnUse" x1="120" y1="150" x2="680" y2="850"><stop offset="0" stop-color="#f0dfaa"/><stop offset=".5" stop-color="#b08d4b"/><stop offset="1" stop-color="#6b5124"/></linearGradient></defs><rect width="800" height="1000" fill="url(#b)"/><ellipse cx="400" cy="860" rx="230" ry="24" fill="#000" opacity=".5"/><g fill="url(#g)" transform="rotate(${[0,-5,4][i%3]} 400 500)">${ICO[c]||ICO.Accesorios}</g><text x="400" y="940" fill="#d8bd7e" font-family="Georgia,serif" font-size="24" letter-spacing="10" text-anchor="middle" opacity=".7">VELARIS</text></svg>`),
+SP=[['Relojes','Calibre Nocturne','VLR-001',18900,'Caja de oro rosa de 18 quilates y cristal de zafiro.'],['Relojes','Tourbillon Aurea','VLR-002',42500,'Caja de platino y esfera de meteorito.'],
+['Chaquetas','Biker Obsidiana','VCH-001',3450,'Piel de cordero napa con acabado mate.'],['Chaquetas','Abrigo Cachemir Noir','VCH-002',4900,'Cachemira doble faz de caída larga.'],
+['Gafas','Aviator Champán','VGA-001',840,'Montura de titanio chapada en oro de 18 quilates.'],['Gafas','Clubmaster Carey','VGA-002',690,'Acetato italiano en tono carey.'],
+['Zapatos','Oxford Cordovan','VZA-001',1150,'Piel de becerro con suela de cuero cosida.'],['Zapatos','Derby Piel Noir','VZA-002',980,'Piel negra pulida a mano.'],
+['Accesorios','Cartera Bespoke','VAC-001',1250,'Piel de becerro de curtición vegetal.'],['Accesorios','Foulard Seda Oro','VAC-002',480,'Sarga de seda estampada a mano.']],
+seed=()=>({t:0,rev:[],cfg:{phone:'34602006585',user:'123',pass:'123',tpl:TPL,intro:INTRO,mode:'image',hv:'',hi:'',brand:'VELARIS',
+ann:'Entrega en 7 a 14 días hábiles. Envío desde nuestro almacén en Alemania.',title:'El arte de lo irrepetible',sub:'Maison de lujo con atención privada',del:'7 a 14 días hábiles',
+t1:'Fábrica de cinco estrellas|Cada pieza se confecciona en una fábrica de máxima categoría.',t2:'Solo alta gama|No trabajamos calidad baja ni media: únicamente piezas premium.',
+t3:'Almacén en Alemania|Su pedido llega a nuestro almacén y sale desde allí hacia su casa.',t4:'Atención privada|Un asesor le acompaña por WhatsApp en cada paso.',
+s1:'Reserva por WhatsApp|Elija su pieza y confirme precio y detalles con su asesor.',s2:'Confección|Su pedido se encarga a la fábrica y se elabora en 1 a 3 días.',
+s3:'Almacén en Alemania|La pieza original llega a nuestro almacén.',s4:'Entrega a domicilio|Se la enviamos a su casa. En total, de 7 a 14 días hábiles.'},
+prods:SP.map((a,n)=>({id:'p'+n,cat:a[0],name:a[1],sku:a[2],price:a[3],cur:'EUR',stock:3,desc:a[4],imgs:[0,1,2].map(i=>art(a[0],i))}))}),
+KEY='velaris_v3';
+let S,O=[],P=null,I=0,F='Todas',ED=null,AUTH=false,tm,sx=null;
 
-/* Capa de datos asíncrona (localStorage). Para Supabase/Firebase: sustituye load()/save() por fetch() a tu tabla/colección con la misma firma. */
-const KEY='velaris_v2';
-const DB={
- async load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}},
- async save(d){try{localStorage.setItem(KEY,JSON.stringify(d));return true}catch(e){toast('Memoria del navegador llena: usa archivos más ligeros o una URL.');return false}}
-};
-let tmr;const toast=m=>{const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(tmr);tmr=setTimeout(()=>t.hidden=true,2800)};
+const toast=m=>{const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(tm);tm=setTimeout(()=>t.hidden=true,2800)},
+DB={async load(){let l=null,r=null;try{l=JSON.parse(localStorage.getItem(KEY))}catch(e){}try{const x=await fetch('data/store.json',{cache:'no-store'});if(x.ok)r=await x.json()}catch(e){}return[l,r].filter(Boolean).sort((a,b)=>(b.t||0)-(a.t||0))[0]||null},
+save(){S.t=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Memoria del navegador llena: use fotos más ligeras o una URL.')}}},
+fnd=id=>S.prods.find(p=>p.id===id),im=p=>(p.imgs||[]).filter(Boolean),first=p=>im(p)[0]||art(p.cat,0),
+sp=k=>String(S.cfg[k]||'').split('|'),
+rv=id=>S.rev.filter(r=>!id||r.pid===id),
+avg=l=>l.reduce((a,r)=>a+r.stars,0)/(l.length||1),
+st=n=>'★'.repeat(Math.round(n))+'☆'.repeat(5-Math.round(n)),
+rt=id=>{const l=rv(id);return l.length?`<span class="stars" aria-label="${avg(l).toFixed(1)} de 5">${st(avg(l))}</span><small>${avg(l).toFixed(1)} (${l.length})</small>`:''},
+rcard=r=>`<blockquote class="rc"><p class="stars">${st(r.stars)}</p><p class="t">${E(r.txt)}</p><footer><b>${E(r.name)}</b>${r.ver?' <span class="vf">✓ Compra verificada</span>':''}<small>${E(r.date||'')}</small></footer>${r.pid&&fnd(r.pid)?`<em>${E(fnd(r.pid).name)}</em>`:''}</blockquote>`,
+rd=f=>new Promise(r=>{const x=new FileReader();x.onload=()=>r(x.result);x.readAsDataURL(f)}),
+shrink=async(f,mx=1400)=>{const u=await rd(f);return new Promise(r=>{const i=new Image();i.onload=()=>{const k=Math.min(1,mx/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);r(c.toDataURL('image/jpeg',.82))};i.onerror=()=>r(u);i.src=u})},
+wa=t=>window.open('https://wa.me/'+String(S.cfg.phone).replace(/\D/g,'')+'?text='+encodeURIComponent(t),'_blank','noopener'),
+one=p=>S.cfg.tpl.replaceAll('{nombre}',p.name).replaceAll('{sku}',p.sku).replaceAll('{categoria}',p.cat),
+lock=()=>document.body.style.overflow=$$('.ov').some(o=>!o.hidden)?'hidden':'',
+show=id=>{$('#'+id).hidden=false;lock()},hide=id=>{$('#'+id).hidden=true;lock()};
 
-let S,O=[],P=null,I=0,F='Todas',ED=null,AUTH=false,dt;
-const fnd=id=>S.prods.find(p=>p.id===id),ol=()=>O.map(fnd).filter(Boolean),slides=()=>P?P.imgs.filter(m=>m.src):[];
-const first=p=>(p.imgs.find(m=>m.src)||{}).src||'';
-const rd=f=>new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(f)});
-const shrink=async(f,mx=1400)=>{const u=await rd(f);if(!f.type.startsWith('image/')||f.type==='image/svg+xml')return u;return new Promise(r=>{const i=new Image();i.onload=()=>{const k=Math.min(1,mx/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);r(c.toDataURL('image/jpeg',.82))};i.onerror=()=>r(u);i.src=u})};
+/* Pintado de la web */
+const rO=()=>{const l=O.map(fnd).filter(Boolean),t={};$('#oc').textContent=l.length;
+ $('#ol').innerHTML=l.map(p=>{t[p.cur]=(t[p.cur]||0)+p.price;return `<li><img src="${E(first(p))}" alt=""><span>${E(p.name)}<small>${E(p.sku)}</small></span><b>${money(p.price,p.cur)}</b><button class="x2" data-rm="${p.id}" aria-label="Quitar">✕</button></li>`}).join('');
+ $('#oe').hidden=!!l.length;$('#ot').textContent=l.length?'Total estimado: '+Object.entries(t).map(([c,v])=>money(v,c)).join(' + '):''},
+render=()=>{const c=S.cfg,hv=$('#hv');
+ $$('[data-k]').forEach(n=>n.textContent=c[n.dataset.k]);document.title=c.brand;
+ $('#hi').style.backgroundImage=c.hi?`url("${c.hi}")`:'';
+ if(c.mode==='video'&&c.hv){if(hv.dataset.s!==c.hv){hv.dataset.s=c.hv;hv.src=c.hv}hv.hidden=false;const p=hv.play();p&&p.catch(()=>hv.hidden=true)}else{hv.hidden=true;hv.removeAttribute('src');delete hv.dataset.s}
+ $('#trust').innerHTML=[1,2,3,4].map(i=>{const[a,b]=sp('t'+i);return `<div><b>${E(a)}</b><span>${E(b)}</span></div>`}).join('');
+ $('#steps').innerHTML=[1,2,3,4].map(i=>{const[a,b]=sp('s'+i);return `<li><i>${i}</i><h3>${E(a)}</h3><p>${E(b)}</p></li>`}).join('');
+ $('#tabs').innerHTML=['Todas',...CATS.map(x=>x[0])].map(k=>`<button class="tab${k===F?' on':''}" data-c="${k}">${k}</button>`).join('');
+ $('#nav').innerHTML=CATS.map(x=>`<button class="${x[0]===F?'on':''}" data-c="${x[0]}">${x[0]}</button>`).join('');
+ const L=S.prods.filter(p=>F==='Todas'||p.cat===F);
+ $('#grid').innerHTML=L.map(p=>{const g=im(p);return `<article class="card" data-id="${p.id}"><div class="ph" data-o tabindex="0" role="button" aria-label="Ver ${E(p.name)}"><img src="${E(first(p))}" alt="${E(p.name)}" loading="lazy">${g[1]?`<img class="b" src="${E(g[1])}" alt="" loading="lazy">`:''}${p.stock>0?'':'<span class="bd">Agotado</span>'}</div><div class="ci"><p class="eb">${E(SUB[p.cat]||p.cat)}</p><h3>${E(p.name)}</h3><p class="pr">${money(p.price,p.cur)}</p><p class="rt">${rt(p.id)}</p><button class="btn" data-wa>Consultar por WhatsApp</button><div class="ln"><button class="lnk" data-o>Ver pieza</button><button class="lnk" data-add>Añadir al pedido</button></div></div></article>`}).join('');
+ $('#empty').hidden=!!L.length;
+ const R=S.rev;$('#revs').hidden=!R.length;$('#rsum').innerHTML=R.length?`${avg(R).toFixed(1)} de 5 <span class="stars">${st(avg(R))}</span><small>${R.length} opiniones</small>`:'';
+ $('#rlist').innerHTML=[...R].reverse().slice(0,9).map(rcard).join('');rO()};
 
-/* WhatsApp Concierge */
-const wa=t=>window.open('https://wa.me/'+String(S.cfg.phone).replace(/\D/g,'')+'?text='+encodeURIComponent(t),'_blank','noopener');
-const one=p=>S.cfg.tpl.replaceAll('{nombre}',p.name).replaceAll('{sku}',p.sku).replaceAll('{categoria}',p.cat);
-const msgO=()=>`${S.cfg.intro}\n\n${ol().map((p,i)=>`${i+1}. ${p.name} (Ref: ${p.sku}) — ${money(p.price,p.cur)}`).join('\n')}\n\n${$('#order-total').textContent}.\n\nDeseo coordinar los detalles de personalización y reserva privada. Quedo a su entera disposición.`;
+/* Ficha de pieza y pedido */
+const paint=()=>{const L=im(P).length?im(P):[art(P.cat,0)];I=(I+L.length)%L.length;$('#gi').src=L[I];$('#gi').alt=P.name;$('#gc').textContent=`${I+1} / ${L.length}`;$('#gc').hidden=L.length<2;
+ $('#gt').innerHTML=L.length>1?L.map((s,i)=>`<img src="${E(s)}" data-t="${i}" class="${i===I?'on':''}" alt="Foto ${i+1}">`).join(''):'';$('#gs').classList.remove('z');$$('.ga').forEach(b=>b.hidden=L.length<2)},
+openP=id=>{P=fnd(id);if(!P)return;I=0;$('#pc').textContent=SUB[P.cat]||P.cat;$('#pn').textContent=P.name;$('#pp').textContent=money(P.price,P.cur);$('#pk').textContent=P.sku+(P.stock>0?'':' (agotado)');$('#pd').textContent=P.desc;$('#prt').innerHTML=rt(P.id);
+ const l=rv(P.id);$('#prv').innerHTML=l.length?'<h4>Opiniones sobre esta pieza</h4>'+l.map(rcard).join(''):'';paint();show('mp')},
+add=id=>{if(!O.includes(id))O.push(id);rO();toast('Añadido a su pedido')},
+msgO=()=>`${S.cfg.intro}\n\n${O.map(fnd).filter(Boolean).map((p,i)=>`${i+1}. ${p.name} (Ref: ${p.sku}), ${money(p.price,p.cur)}`).join('\n')}\n\n${$('#ot').textContent}.\n\nQuedo a su entera disposición.`,
+gs=$('#gs');
+gs.addEventListener('pointerdown',e=>sx=e.clientX);
+gs.addEventListener('pointerup',e=>{if(sx==null)return;const d=e.clientX-sx;sx=null;
+ if(Math.abs(d)>45){I+=d<0?1:-1;paint()}
+ else if(!e.target.closest('.ga')){const r=gs.getBoundingClientRect();gs.style.setProperty('--ox',(e.clientX-r.left)/r.width*100+'%');gs.style.setProperty('--oy',(e.clientY-r.top)/r.height*100+'%');gs.classList.toggle('z')}});
+$('#gp').onclick=()=>{I--;paint()};$('#gn').onclick=()=>{I++;paint()};
+$('#pw').onclick=()=>wa(one(P));$('#pa').onclick=()=>add(P.id);
+$('#b-ord').onclick=()=>{rO();show('mo')};
+$('#b-wa').onclick=$('#fab').onclick=$('#b-cc').onclick=()=>wa(`Estimado asesor de ${S.cfg.brand}, solicito asistencia exclusiva para conocer las piezas disponibles. Quedo a su entera disposición.`);
+$('#os').onclick=()=>O.length?wa(msgO()):toast('Añada primero alguna pieza a su pedido.');
+$('#ox').onclick=()=>{O=[];rO()};
 
-/* Capas */
-const lock=()=>document.body.style.overflow=$$('.ov').some(o=>!o.hidden)?'hidden':'';
-const show=id=>{$('#'+id).hidden=false;lock()},hide=id=>{$('#'+id).hidden=true;lock()};
-
-/* Universo: estrellas titilantes, polvo estelar dorado y nebulosas con paralaje táctil/scroll */
-const cv=$('#cosmos'),cx=cv.getContext('2d'),R=Math.random,reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
-let W=innerWidth,H=innerHeight,stars=[],dust=[],neb=[],px=0,py=0,tx=0,ty=0,sy=0;
-const rs=()=>{const d=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0)};
-const init=()=>{const n=Math.round(Math.min(260,Math.max(160,W*H/6000)));
- stars=Array.from({length:n},()=>({x:R()*W,y:R()*H,z:.15+R()*.85,r:.3+R()*1.1,p:R()*6.28,s:.4+R()*1.6}));
- dust=Array.from({length:70},()=>({x:R()*W,y:R()*H,z:.3+R()*.7,r:.8+R()*2,vx:(R()-.5)*.2,vy:-.08-R()*.25,a:.25+R()*.5}));
- neb=Array.from({length:5},(_,i)=>({x:R()*W,y:R()*H,z:.2+R()*.5,r:260+R()*320,vx:(R()-.5)*.12,vy:(R()-.5)*.08,c:i%2?'rgba(212,175,55,.055)':'rgba(70,50,110,.09)'}))};
-const wrap=(v,m)=>((v%m)+m)%m;
-const draw=t=>{px+=(tx-px)*.05;py+=(ty-py)*.05;cx.clearRect(0,0,W,H);cx.globalCompositeOperation='source-over';
- for(const n of neb){n.x=wrap(n.x+n.vx,W);n.y=wrap(n.y+n.vy,H);const x=n.x-px*40*n.z,y=n.y-py*40*n.z-sy*.06*n.z,g=cx.createRadialGradient(x,y,0,x,y,n.r);g.addColorStop(0,n.c);g.addColorStop(1,'rgba(0,0,0,0)');cx.fillStyle=g;cx.fillRect(x-n.r,y-n.r,n.r*2,n.r*2)}
- for(const s of stars){const x=wrap(s.x-px*70*s.z,W),y=wrap(s.y-py*70*s.z-sy*.35*s.z,H),a=(.3+.7*(.5+.5*Math.sin(t*.001*s.s+s.p)))*(.4+.6*s.z);cx.fillStyle=`rgba(253,253,251,${a})`;cx.beginPath();cx.arc(x,y,s.r*(.6+s.z),0,6.283);cx.fill()}
- cx.globalCompositeOperation='lighter';
- for(const d of dust){d.x=wrap(d.x+d.vx,W);d.y=wrap(d.y+d.vy,H);const x=wrap(d.x-px*110*d.z,W),y=wrap(d.y-py*110*d.z-sy*.5*d.z,H),g=cx.createRadialGradient(x,y,0,x,y,d.r*4);g.addColorStop(0,`rgba(230,202,101,${d.a})`);g.addColorStop(1,'rgba(212,175,55,0)');cx.fillStyle=g;cx.fillRect(x-d.r*4,y-d.r*4,d.r*8,d.r*8)}
- if(!reduce)requestAnimationFrame(draw)};
-addEventListener('resize',()=>{rs();init();if(reduce)draw(0)});
-addEventListener('scroll',()=>sy=scrollY,{passive:true});
-addEventListener('touchmove',e=>{const t=e.touches[0];tx=(t.clientX/W-.5)*2;ty=(t.clientY/H-.5)*2},{passive:true});
-const gl=$('#glow');
-addEventListener('pointermove',e=>{gl.style.transform=`translate3d(${e.clientX-160}px,${e.clientY-160}px,0)`;tx=(e.clientX/W-.5)*2;ty=(e.clientY/H-.5)*2;const c=e.target.closest&&e.target.closest('.card,.btn');if(c){const r=c.getBoundingClientRect();c.style.setProperty('--mx',e.clientX-r.left+'px');c.style.setProperty('--my',e.clientY-r.top+'px')}},{passive:true});
-
-/* Render público */
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});
-const reveal=()=>$$('.rv:not(.in)').forEach(n=>io.observe(n));
-const rO=()=>{const l=ol(),t={};$('#order-count').textContent=l.length;
- $('#order-list').innerHTML=l.map(p=>{t[p.cur]=(t[p.cur]||0)+p.price;return `<li><img src="${E(first(p))}" alt=""><span>${E(p.name)}<small>${E(p.sku)}</small></span><b>${money(p.price,p.cur)}</b><button type="button" class="btn sm ghost" data-rm="${p.id}" aria-label="Quitar">✕</button></li>`}).join('');
- $('#order-empty').hidden=l.length>0;const to=$('#order-total');to.hidden=!l.length;to.textContent='Total estimado: '+Object.entries(t).map(([c,v])=>money(v,c)).join(' + ')};
-const rdr=()=>{const c=S.cfg,hv=$('#hero-video');
- $('#hero-title').textContent=c.title;$('#hero-sub').textContent=c.sub;
- $('#hero-fallback').style.backgroundImage=c.hi?`url("${c.hi}")`:'';
- if(c.hv){if(hv.dataset.s!==c.hv){hv.dataset.s=c.hv;hv.src=c.hv}hv.hidden=false;const p=hv.play();if(p)p.catch(()=>hv.hidden=true)}else{delete hv.dataset.s;hv.removeAttribute('src');hv.load();hv.hidden=true}
- $('#cat-tabs').innerHTML=['Todas',...CATS].map(k=>`<button type="button" role="tab" class="tab${k===F?' on':''}" data-cat="${k}">${k}</button>`).join('');
- $$('#nav-cats button').forEach(b=>b.classList.toggle('on',b.dataset.cat===F));
- const g=$('#grid'),t=$('#tpl-card'),L=S.prods.filter(p=>F==='Todas'||p.cat===F);g.innerHTML='';
- L.forEach(p=>{const n=t.content.firstElementChild.cloneNode(true),im=n.querySelector('img');n.dataset.id=p.id;n.classList.add('rv');im.src=first(p);im.alt=p.name;n.querySelector('p[data-cat]').textContent=SUB[p.cat];n.querySelector('[data-name]').textContent=p.name;n.querySelector('[data-price]').textContent=money(p.price,p.cur);n.querySelector('[data-sku]').textContent=p.sku;n.querySelector('.badge').hidden=p.stock>0;g.append(n)});
- $('#grid-empty').hidden=L.length>0;reveal();rO()};
-
-/* Galería sincronizada (foto + descripción con cross-fade) y visor con zoom */
-let Z={s:1,x:0,y:0};
-const tf=()=>{$('#lb-img').style.transform=`translate3d(${Z.x}px,${Z.y}px,0) scale(${Z.s})`;$('#lb-zreset').textContent=Z.s.toFixed(1).replace('.0','')+'×'};
-const zr=()=>{Z={s:1,x:0,y:0};tf()};
-const zs=v=>{Z.s=Math.min(5,Math.max(1,v));if(Z.s===1)Z.x=Z.y=0;tf()};
-const paint=full=>{const L=slides();if(!L.length){$('#gal-desc').textContent=P.desc;return}I=(I+L.length)%L.length;const m=L[I],txt=m.txt||P.desc;
- $('#gal-img').src=$('#lb-img').src=m.src;$('#gal-img').alt=$('#lb-img').alt=P.name;
- $('#gal-count').textContent=$('#lb-count').textContent=`${I+1} / ${L.length}`;
- const ds=[$('#gal-desc'),$('#lb-desc')];clearTimeout(dt);
- if(full)ds.forEach(d=>{d.textContent=txt;d.classList.remove('out')});
- else{ds.forEach(d=>d.classList.add('out'));dt=setTimeout(()=>ds.forEach(d=>{d.textContent=txt;d.classList.remove('out')}),280)}
- if(full)['gal-thumbs','lb-thumbs'].forEach(k=>$('#'+k).innerHTML=L.map((x,i)=>`<img src="${E(x.src)}" data-t="${i}" alt="Foto ${i+1}">`).join(''));
- $$('.thumbs img').forEach(t=>t.classList.toggle('on',+t.dataset.t===I));zr()};
-const openP=id=>{P=fnd(id);if(!P)return;I=0;$('#pm-cat').textContent=SUB[P.cat];$('#pm-name').textContent=P.name;$('#pm-price').textContent=money(P.price,P.cur);$('#pm-sku').textContent=P.sku+(P.stock>0?'':' · Agotado');show('modal-product');paint(true)};
-const add=id=>{if(!O.includes(id))O.push(id);rO();toast('Añadido al pedido VIP')};
-const st=$('#lb-stage'),ptr=new Map();let d0=0,s0=1;
-const dist=()=>{const [a,b]=[...ptr.values()];return Math.hypot(a.x-b.x,a.y-b.y)};
-st.addEventListener('pointerdown',e=>{ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});st.setPointerCapture(e.pointerId);if(ptr.size===2){d0=dist();s0=Z.s}});
-st.addEventListener('pointermove',e=>{const p=ptr.get(e.pointerId);if(!p)return;const n={x:e.clientX,y:e.clientY};if(ptr.size===2){ptr.set(e.pointerId,n);zs(s0*dist()/d0)}else{if(Z.s>1){Z.x+=n.x-p.x;Z.y+=n.y-p.y;tf()}ptr.set(e.pointerId,n)}});
-const up=e=>{ptr.delete(e.pointerId);if(Z.s<=1.02)zr()};
-st.addEventListener('pointerup',up);st.addEventListener('pointercancel',up);
-st.addEventListener('dblclick',()=>Z.s>1?zr():zs(2.5));
-st.addEventListener('wheel',e=>{e.preventDefault();zs(Z.s-e.deltaY/300)},{passive:false});
-$('#lb-zin').onclick=()=>zs(Z.s+.5);$('#lb-zout').onclick=()=>zs(Z.s-.5);$('#lb-zreset').onclick=zr;
-$('#gal-prev').onclick=$('#lb-prev').onclick=()=>{I--;paint()};
-$('#gal-next').onclick=$('#lb-next').onclick=()=>{I++;paint()};
-const openLb=()=>{show('lightbox');zr()};
-$('#gal-stage').addEventListener('click',e=>{if(!e.target.closest('.ar'))openLb()});
-$('#gal-stage').addEventListener('keydown',e=>{if(e.key==='Enter')openLb()});
-$('#pm-wa').onclick=$('#lb-wa').onclick=()=>wa(one(P));
-$('#pm-add').onclick=()=>add(P.id);
-
-/* Pedido VIP y Concierge */
-$('#btn-order').onclick=()=>{rO();show('modal-order')};
-$('#order-send').onclick=()=>O.length?wa(msgO()):toast('Añada primero alguna pieza a su pedido.');
-$('#order-clear').onclick=()=>{O=[];rO()};
-$('#btn-conc').onclick=()=>wa('Estimado Concierge de VELARIS, solicito asistencia exclusiva para conocer las piezas disponibles. Quedo a su entera disposición.');
-
-/* Eventos globales */
-document.addEventListener('click',e=>{const t=e.target;
- const c=t.closest('button[data-cat]');if(c){F=c.dataset.cat;rdr();$('#catalogo').scrollIntoView({behavior:'smooth'});return}
- const th=t.closest('.thumbs img');if(th){I=+th.dataset.t;paint();return}
+document.addEventListener('click',e=>{const t=e.target,c=t.closest('[data-c]');
+ if(c){F=c.dataset.c;render();$('#cat').scrollIntoView({behavior:'smooth'});return}
+ const cd=t.closest('.card');
+ if(cd){const id=cd.dataset.id;if(t.closest('[data-wa]'))wa(one(fnd(id)));else if(t.closest('[data-add]'))add(id);else if(t.closest('[data-o]'))openP(id);return}
+ const th=t.closest('#gt img');if(th){I=+th.dataset.t;paint();return}
  const rm=t.closest('[data-rm]');if(rm){O=O.filter(x=>x!==rm.dataset.rm);rO();return}
- const cl=t.closest('[data-close]');if(cl){hide(cl.closest('.ov').id);return}
- if(t.matches('.ov:not(.lb)'))hide(t.id)});
-$('#grid').addEventListener('click',e=>{const card=e.target.closest('.card');if(!card)return;const id=card.dataset.id;
- if(e.target.closest('[data-wa]'))wa(one(fnd(id)));else if(e.target.closest('[data-add]'))add(id);else if(e.target.closest('[data-open]'))openP(id)});
-$('#grid').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('figure[data-open]'))openP(e.target.closest('.card').dataset.id)});
-addEventListener('keydown',e=>{const o=$$('.ov').filter(x=>!x.hidden).pop();if(!o)return;if(e.key==='Escape')hide(o.id);if(P&&(o.id==='modal-product'||o.id==='lightbox')){if(e.key==='ArrowRight'){I++;paint()}if(e.key==='ArrowLeft'){I--;paint()}}});
+ const x=t.closest('[data-x]');if(x){hide(x.closest('.ov').id);return}
+ if(t.classList.contains('ov'))hide(t.id)});
+addEventListener('keydown',e=>{const o=$$('.ov').filter(x=>!x.hidden).pop();
+ if(!o){if(e.key==='Enter'&&e.target.matches('.ph'))openP(e.target.closest('.card').dataset.id);return}
+ if(e.key==='Escape')hide(o.id);
+ if(o.id==='mp'){if(e.key==='ArrowRight'){I++;paint()}if(e.key==='ArrowLeft'){I--;paint()}}});
 
-/* Panel de administración */
-const hs=()=>$('#hr-status').textContent=`Vídeo: ${S.cfg.hv?'cargado':'sin cargar'} · Imagen de respaldo: ${S.cfg.hi?'personalizada':'por defecto'}.`;
-const alist=()=>{$('#adm-form').hidden=true;$('#adm-listbox').hidden=false;$('#adm-list').innerHTML=S.prods.map(p=>`<li><img src="${E(first(p))}" alt=""><span>${E(p.name)}<small>${p.cat} · ${E(p.sku)} · ${money(p.price,p.cur)} · stock ${p.stock}</small></span><button type="button" class="btn sm ghost" data-ed="${p.id}">Editar</button><button type="button" class="btn sm ghost" data-del="${p.id}">Eliminar</button></li>`).join('')||'<li class="empty">Sin piezas. Crea la primera.</li>'};
-const adm=k=>{$$('[data-adm]').forEach(b=>b.classList.toggle('on',b.dataset.adm===k));['prods','hero','conf'].forEach(v=>$('#adm-'+v).hidden=v!==k);const c=S.cfg;
- if(k==='hero'){$('#hr-title').value=c.title;$('#hr-sub').value=c.sub;$('#hr-url').value=c.hv.startsWith('data:')?'':c.hv;hs()}
- if(k==='conf'){$('#cf-phone').value=c.phone;$('#cf-user').value=c.user;$('#cf-pass').value=c.pass;$('#cf-tpl').value=c.tpl;$('#cf-intro').value=c.intro}
- if(k==='prods'){ED=null;alist()}};
-const gate=()=>{$('#admin-login').hidden=AUTH;$('#admin-panel').hidden=!AUTH;if(AUTH)adm('prods')};
-$('#btn-admin').onclick=()=>{gate();show('modal-admin')};
-$('#admin-login').addEventListener('submit',e=>{e.preventDefault();if($('#lg-user').value===S.cfg.user&&$('#lg-pass').value===S.cfg.pass){AUTH=true;$('#lg-err').hidden=true;e.target.reset();gate()}else $('#lg-err').hidden=false});
-$('#adm-logout').onclick=()=>{AUTH=false;ED=null;gate()};
-$$('[data-adm]').forEach(b=>b.onclick=()=>adm(b.dataset.adm));
+/* Panel privado */
+const hs=()=>$('#hst').textContent=`Vídeo: ${S.cfg.hv?'cargado':'sin cargar'}. Imagen: ${S.cfg.hi?'cargada':'por defecto'}. Se muestra: ${S.cfg.mode==='video'&&S.cfg.hv?'el vídeo':'la imagen'}.`,
+sv=()=>{DB.save();render();hs()},
+plist=()=>{$('#pf').hidden=true;$('#pl').hidden=false;$('#pls').innerHTML=S.prods.map(p=>`<li><img src="${E(first(p))}" alt=""><span>${E(p.name)}<small>${E(p.cat)}, ${E(p.sku)}, ${money(p.price,p.cur)}, stock ${p.stock}</small></span><button class="btn sm ghost" data-e="${p.id}">Editar</button><button class="btn sm ghost" data-del="${p.id}">Eliminar</button></li>`).join('')||'<li class="mut">Todavía no hay piezas.</li>'},
+rlist=()=>{$('#rls').innerHTML=S.rev.map(r=>`<li><span>${E(r.name)}, ${st(r.stars)}${r.ver?', verificada':''}<small>${E(r.txt.slice(0,70))}</small></span><button class="btn sm ghost" data-rdel="${r.id}">Eliminar</button></li>`).join('')||'<li class="mut">Todavía no hay reseñas.</li>'},
+slots=()=>{$('#sl').innerHTML=ED.imgs.map((s,i)=>`<li data-i="${i}"><div class="sp">${s?`<img src="${E(s)}" alt="">`:'Vacía'}</div><label class="btn sm">Subir foto<input type="file" accept="image/*" hidden data-f></label><button type="button" class="btn sm ghost" data-d>Quitar</button><input data-u placeholder="o URL o ruta de la foto" value="${s.startsWith('data:')?'':E(s)}"></li>`).join('')},
+edit=p=>{ED=p?JSON.parse(JSON.stringify(p)):{id:'p'+Date.now(),cat:CATS[0][0],name:'',sku:'',price:0,cur:'EUR',stock:1,desc:'',imgs:[]};ED._n=!p;ED.imgs=ED.imgs.filter(Boolean);while(ED.imgs.length<6)ED.imgs.push('');
+ const f=$('#pf').elements;['cat','name','sku','price','cur','stock','desc'].forEach(k=>f[k].value=ED[k]);$('#pft').textContent=p?'Editar pieza':'Nueva pieza';$('#pl').hidden=true;$('#pf').hidden=false;slots()},
+adm=k=>{$$('[data-a]').forEach(b=>b.classList.toggle('on',b.dataset.a===k));['p','h','r','t','s'].forEach(v=>$('#a-'+v).hidden=v!==k);const c=S.cfg;
+ if(k==='p'){ED=null;plist()}
+ if(k==='h'){$('#hm').value=c.mode;$('#hu').value=c.hv.startsWith('data:')?'':c.hv;$('#hn').value=c.hi.startsWith('data:')?'':c.hi;hs()}
+ if(k==='r'){$('#rp').innerHTML='<option value="">Toda la tienda</option>'+S.prods.map(p=>`<option value="${p.id}">${E(p.name)}</option>`).join('');$('#rd').value=new Date().toLocaleDateString('es-ES',{month:'long',year:'numeric'});rlist()}
+ if(k==='t')$('#tf').innerHTML=FIELDS.map(([f,l])=>`<label>${l}<input data-k2="${f}" value="${E(c[f])}"></label>`).join('');
+ if(k==='s')['phone','user','pass','tpl','intro'].forEach(x=>$('#c-'+x).value=c[x])},
+gate=()=>{$('#lf').hidden=AUTH;$('#ap').hidden=!AUTH;if(AUTH)adm('p')};
+$('#b-adm').onclick=()=>{gate();show('ma')};
+$('#lf').addEventListener('submit',e=>{e.preventDefault();if($('#lu').value===S.cfg.user&&$('#lp').value===S.cfg.pass){AUTH=true;$('#le').hidden=true;e.target.reset();gate()}else $('#le').hidden=false});
+$('#lo').onclick=()=>{AUTH=false;ED=null;gate()};
+$$('[data-a]').forEach(b=>b.onclick=()=>adm(b.dataset.a));
 
-const form=$('#adm-form');
-const slotsR=()=>{const ul=$('#slots'),t=$('#tpl-slot');ul.innerHTML='';ED.imgs.forEach((m,i)=>{const n=t.content.firstElementChild.cloneNode(true),im=n.querySelector('img');n.dataset.i=i;n.querySelector('.slot-n b').textContent=i+1;im.hidden=!m.src;if(m.src)im.src=m.src;n.querySelector('.slot-empty').hidden=!!m.src;n.querySelector('[data-slot-txt]').value=m.txt;ul.append(n)})};
-const edit=p=>{ED=p?JSON.parse(JSON.stringify(p)):{id:'p'+Date.now(),cat:CATS[0],name:'',sku:'',price:0,cur:'EUR',stock:1,desc:'',imgs:[]};ED._new=!p;
- while(ED.imgs.length<8)ED.imgs.push({src:'',txt:''});
- $('#adm-form-title').textContent=p?'Editar pieza':'Nueva pieza';const f=form.elements;['cat','name','sku','price','cur','stock','desc'].forEach(k=>f[k].value=ED[k]);
- $('#adm-listbox').hidden=true;form.hidden=false;slotsR();$('#adm-prods').scrollTop=0};
-$('#adm-new').onclick=()=>edit();
-$('#adm-cancel').onclick=()=>{ED=null;alist()};
-$('#adm-list').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;
- if(b.dataset.ed)edit(fnd(b.dataset.ed));
- if(b.dataset.del&&confirm('¿Eliminar esta pieza?')){S.prods=S.prods.filter(p=>p.id!==b.dataset.del);O=O.filter(x=>x!==b.dataset.del);await DB.save(S);rdr();alist()}});
-$('#slots').addEventListener('click',e=>{const li=e.target.closest('.slot');if(!li)return;const i=+li.dataset.i,a=ED.imgs;
- if(e.target.closest('[data-slot-del]'))a[i]={src:'',txt:''};
- else if(e.target.closest('[data-slot-up]')&&i>0)[a[i-1],a[i]]=[a[i],a[i-1]];
- else if(e.target.closest('[data-slot-down]')&&i<7)[a[i+1],a[i]]=[a[i],a[i+1]];
- else return;slotsR()});
-$('#slots').addEventListener('input',e=>{const li=e.target.closest('.slot');if(li&&e.target.matches('[data-slot-txt]'))ED.imgs[+li.dataset.i].txt=e.target.value});
-$('#slots').addEventListener('change',async e=>{const li=e.target.closest('.slot'),f=e.target.files&&e.target.files[0];if(!li||!f||!e.target.matches('[data-slot-file]'))return;ED.imgs[+li.dataset.i].src=await shrink(f);slotsR()});
-form.addEventListener('submit',async e=>{e.preventDefault();const f=form.elements;['cat','name','sku','cur','desc'].forEach(k=>ED[k]=f[k].value.trim());ED.price=+f.price.value||0;ED.stock=Math.max(0,parseInt(f.stock.value)||0);
- const {_new,...p}=ED;if(_new)S.prods.push(p);else S.prods[S.prods.findIndex(x=>x.id===p.id)]=p;
- await DB.save(S);ED=null;rdr();alist();toast('Pieza guardada')});
+$('#new').onclick=()=>edit();
+$('#cancel').onclick=()=>{ED=null;plist()};
+$('#pls').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.e)edit(fnd(b.dataset.e));
+ if(b.dataset.del&&confirm('¿Eliminar esta pieza?')){S.prods=S.prods.filter(p=>p.id!==b.dataset.del);O=O.filter(x=>x!==b.dataset.del);DB.save();render();plist()}});
+$('#sl').addEventListener('click',e=>{if(e.target.closest('[data-d]')){ED.imgs[+e.target.closest('li').dataset.i]='';slots()}});
+$('#sl').addEventListener('change',async e=>{const li=e.target.closest('li');if(!li)return;const i=+li.dataset.i;
+ if(e.target.matches('[data-f]')){const f=e.target.files[0];if(f){ED.imgs[i]=await shrink(f);slots()}}
+ else if(e.target.matches('[data-u]')){ED.imgs[i]=e.target.value.trim();slots()}});
+$('#pf').addEventListener('submit',e=>{e.preventDefault();const f=e.target.elements;['cat','name','sku','cur','desc'].forEach(k=>ED[k]=f[k].value.trim());ED.price=+f.price.value||0;ED.stock=Math.max(0,parseInt(f.stock.value)||0);
+ const{_n,...p}=ED;p.imgs=p.imgs.filter(Boolean);_n?S.prods.push(p):S.prods[S.prods.findIndex(x=>x.id===p.id)]=p;DB.save();ED=null;render();plist();toast('Pieza guardada')});
 
-const sv=async()=>{await DB.save(S);rdr();hs()};
-[['hr-title','title'],['hr-sub','sub'],['hr-url','hv']].forEach(([id,k])=>$('#'+id).addEventListener('change',e=>{S.cfg[k]=e.target.value.trim();sv()}));
-$('#hr-video').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;if(f.size>3.5e6){toast('El vídeo supera ~3,5 MB: usa un clip corto o una URL.');e.target.value='';return}S.cfg.hv=await rd(f);e.target.value='';$('#hr-url').value='';sv()});
-$('#hr-img').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;S.cfg.hi=await shrink(f,2000);e.target.value='';sv()});
-$('#hr-video-del').onclick=()=>{S.cfg.hv='';$('#hr-url').value='';sv()};
-$('#hr-img-del').onclick=()=>{S.cfg.hi='';sv()};
-$('#cf-save').onclick=async()=>{const g=id=>$('#'+id).value.trim(),u=g('cf-user'),pw=g('cf-pass'),tel=g('cf-phone').replace(/\D/g,'');
- if(!u||!pw||!tel){toast('Usuario, contraseña y WhatsApp son obligatorios.');return}
- Object.assign(S.cfg,{phone:tel,user:u,pass:pw,tpl:g('cf-tpl')||TPL,intro:g('cf-intro')||INTRO});await DB.save(S);toast('Ajustes guardados')};
-$('#cf-reset').onclick=async()=>{if(!confirm('Se borrarán tus cambios y volverán los datos de ejemplo.'))return;S=seed();O=[];await DB.save(S);rdr();adm('conf');toast('Datos restaurados')};
+$('#rf').addEventListener('submit',e=>{e.preventDefault();const f=e.target.elements;S.rev.push({id:'r'+Date.now(),pid:f.pid.value,name:f.name.value.trim(),stars:+f.stars.value,txt:f.txt.value.trim(),date:f.date.value.trim(),ver:f.ver.checked});DB.save();e.target.reset();adm('r');render();toast('Reseña añadida')});
+$('#rls').addEventListener('click',e=>{const b=e.target.closest('[data-rdel]');if(b&&confirm('¿Eliminar esta reseña?')){S.rev=S.rev.filter(r=>r.id!==b.dataset.rdel);DB.save();render();rlist()}});
+
+$('#hm').onchange=e=>{S.cfg.mode=e.target.value;sv()};
+$('#hu').onchange=e=>{S.cfg.hv=e.target.value.trim();sv()};
+$('#hn').onchange=e=>{S.cfg.hi=e.target.value.trim();sv()};
+$('#hvf').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;if(f.size>3e6){toast('El vídeo pesa más de 3 MB: súbalo a GitHub y pegue su ruta.');return}S.cfg.hv=await rd(f);S.cfg.mode='video';$('#hm').value='video';$('#hu').value='';sv()};
+$('#hif').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;S.cfg.hi=await shrink(f,2200);S.cfg.mode='image';$('#hm').value='image';$('#hn').value='';sv()};
+$('#hvd').onclick=()=>{S.cfg.hv='';$('#hu').value='';sv()};
+$('#hid').onclick=()=>{S.cfg.hi='';$('#hn').value='';sv()};
+$('#tf').addEventListener('change',e=>{const k=e.target.dataset.k2;if(k){S.cfg[k]=e.target.value;sv()}});
+
+$('#cs').onclick=()=>{const g=k=>$('#c-'+k).value.trim(),ph=g('phone').replace(/\D/g,'');if(!ph||!g('user')||!g('pass')){toast('WhatsApp, usuario y contraseña son obligatorios.');return}
+ Object.assign(S.cfg,{phone:ph,user:g('user'),pass:g('pass'),tpl:g('tpl')||TPL,intro:g('intro')||INTRO});DB.save();toast('Ajustes guardados')};
+$('#ce').onclick=()=>{DB.save();const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='store.json';a.click();toast('store.json listo: súbalo a la carpeta data de GitHub')};
+$('#ci').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const o=JSON.parse(await f.text());S={...seed(),...o};S.cfg={...seed().cfg,...o.cfg};DB.save();render();adm('s');toast('Datos importados')}catch(x){toast('El archivo no es válido.')}};
+$('#cr').onclick=()=>{if(!confirm('Se restaurarán los datos de ejemplo y se perderán sus cambios.'))return;S=seed();O=[];DB.save();render();adm('s');toast('Datos restaurados')};
 
 /* Arranque */
-(async()=>{S=(await DB.load())||seed();S.cfg={...seed().cfg,...S.cfg};
- $$('.hero-copy,.sec-head,.conc-card').forEach(n=>n.classList.add('rv'));
- $('#hero-video').addEventListener('error',e=>e.target.hidden=true);
- rdr();rs();init();reduce?draw(0):requestAnimationFrame(draw)})();
+(async()=>{S=await DB.load()||seed();S.cfg={...seed().cfg,...S.cfg};S.rev=S.rev||[];S.prods=S.prods||[];
+ $('#pf').elements.cat.innerHTML=CATS.map(c=>`<option>${E(c[0])}</option>`).join('');render()})();
