@@ -10,12 +10,29 @@
 <meta name="theme-color" content="#050505"><meta name="color-scheme" content="dark">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="VELARIS">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&family=Manrope:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&family=Manrope:wght@300;400;600&family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/luxe.css">
+<link rel="stylesheet" href="css/intro.css">
+<script>try{var d=document.documentElement;if(sessionStorage.getItem('vi')&&!/[?&]intro/.test(location.search))d.classList.add('vs');else if(!matchMedia('(prefers-reduced-motion:reduce)').matches){d.classList.add('vi-on','ni');setTimeout(function(){d.classList.remove('vi-on')},17000)}}catch(e){}</script>
 <script type="application/ld+json" id="ld">{"@context":"https://schema.org","@type":"Organization","name":"VELARIS"}</script>
 </head>
 <body>
-<div id="intro" aria-hidden="true"><span class="gt">VELARIS</span></div><div id="prog" aria-hidden="true"></div><div id="cur" aria-hidden="true"></div>
+<div id="vi">
+<canvas id="vfx" aria-hidden="true"></canvas>
+<div class="vguil" aria-hidden="true"><svg viewBox="0 0 400 400"><circle cx="200" cy="200" r="196" stroke-width=".6" stroke-dasharray="1 6"/><circle cx="200" cy="200" r="178" stroke-width=".5" stroke-dasharray="14 8"/><circle cx="200" cy="200" r="156" stroke-width=".5" stroke-dasharray="2 5"/><circle cx="200" cy="200" r="132" stroke-width=".4" stroke-dasharray="30 12"/><circle cx="200" cy="200" r="108" stroke-width=".4" stroke-dasharray="3 4"/><circle cx="200" cy="200" r="84" stroke-width=".4" stroke-dasharray="44 16"/></svg></div>
+<div class="vglow" aria-hidden="true"></div><div class="vbloom" aria-hidden="true"></div>
+<div class="vframe" aria-hidden="true"><i class="c1"><b></b></i><i class="c2"><b></b></i><i class="c3"><b></b></i><i class="c4"><b></b></i></div>
+<div class="vstage">
+  <div class="vemb" id="vpe" aria-hidden="true"><div class="vhalo"></div>
+    <svg viewBox="0 0 64 64"><defs><linearGradient id="vmg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A8842C"/><stop offset=".5" stop-color="#FFFBE8"/><stop offset="1" stop-color="#D4AF37"/></linearGradient></defs>
+    <circle class="ring" cx="32" cy="32" r="29" pathLength="100"/><circle class="ring2" cx="32" cy="32" r="25"/><path class="vv" d="M21 20 L32 46 L43 20" pathLength="100"/><circle class="dot" cx="32" cy="12.5" r="1.5"/></svg>
+  </div>
+  <p class="vword" id="vpw" role="img" aria-label="VELARIS"><span style="--i:0">V</span><span style="--i:1">E</span><span style="--i:2">L</span><span style="--i:3">A</span><span style="--i:4">R</span><span style="--i:5">I</span><span style="--i:6">S</span></p>
+  <div class="vdiv" id="vpd" aria-hidden="true"><i class="dl"></i><i class="dia"></i><i class="dr"></i></div>
+</div>
+<div class="vgrain" aria-hidden="true"></div><div class="vvig" aria-hidden="true"></div>
+<button id="vskip" type="button">Saltar</button>
+</div><div id="prog" aria-hidden="true"></div><div id="cur" aria-hidden="true"></div>
 <canvas id="cosmos" aria-hidden="true"></canvas>
 <div id="glow" aria-hidden="true"></div>
 <a class="skip" href="#catalogo">Ir al catálogo</a>
@@ -71,8 +88,8 @@
     </div>
   </section>
 <section class="maison" aria-labelledby="mz-t">
-  <div class="mz"><p class="eyebrow">La Maison</p><h2 id="mz-t">Pocas piezas. Ninguna igual.</h2><p>Cada creación VELARIS nace en series cortas y numeradas, con materiales trazables y acabados de taller. Se entrega con su certificado de autenticidad.</p></div>
-  <ol class="steps"><li><b>I</b><h3>Consulta privada</h3><p>Cuéntenos qué busca y le asesoramos por WhatsApp.</p></li><li><b>II</b><h3>Atelier</h3><p>Reservamos la pieza, la personalizamos y confirmamos plazos.</p></li><li><b>III</b><h3>Entrega</h3><p>Estuche numerado, certificado y envío asegurado.</p></li></ol>
+  <div class="mz"><p class="eyebrow">La Maison</p><h2 id="mz-t">Pocas piezas. Ninguna igual.</h2><p>Cada creación VELARIS se elabora en series reducidas, con materiales de primerísima calidad y acabados de taller. Se entrega en un estuche exclusivo.</p></div>
+  <ol class="steps"><li><b>I</b><h3>Consulta privada</h3><p>Cuéntenos qué busca y le asesoramos por WhatsApp.</p></li><li><b>II</b><h3>Atelier</h3><p>Reservamos la pieza, la personalizamos y confirmamos plazos.</p></li><li><b>III</b><h3>Entrega</h3><p>Estuche exclusivo y envío asegurado.</p></li></ol>
 </section>
 </main>
 
@@ -190,11 +207,16 @@
         <div class="fg">
           <label class="w">Título<input id="hr-title"></label>
           <label class="w">Subtítulo<input id="hr-sub"></label>
-          <label class="w">Vídeo por URL (opcional)<input id="hr-url" inputmode="url" placeholder="https://…/showreel.mp4"></label>
+          <label class="w" hidden>Vídeo por URL<input id="hr-url"></label>
         </div>
+        <h3>Vídeos del cuadro de portada</h3>
+        <p class="note">Se reproducen en bucle, uno tras otro. Mejor MP4 (H.264), hasta ~30 MB. Para subir archivos hay que tener GitHub configurado en Ajustes.</p>
+        <ul id="vl" class="olist"></ul>
+        <div class="row"><label class="btn">+ Subir vídeo<input id="vf" type="file" accept="video/*" hidden></label><button type="button" class="btn ghost" id="vu">+ Añadir por enlace</button></div>
+        <h3>Imagen de respaldo</h3>
         <div class="row">
-          <label class="btn">Subir / Cambiar vídeo<input id="hr-video" type="file" accept="video/*" hidden></label>
-          <button type="button" class="btn ghost" id="hr-video-del">Quitar vídeo</button>
+          <label class="btn" hidden>Vídeo<input id="hr-video" type="file" accept="video/*" hidden></label>
+          <button type="button" class="btn ghost" id="hr-video-del" hidden>Quitar vídeo</button>
           <label class="btn">Subir / Cambiar imagen<input id="hr-img" type="file" accept="image/*" hidden></label>
           <button type="button" class="btn ghost" id="hr-img-del">Quitar imagen</button>
         </div>
@@ -234,5 +256,6 @@
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 <script src="js/app.js" defer></script>
 <script src="js/extra.js" defer></script>
+<script src="js/intro.js" defer></script>
 </body>
 </html>
