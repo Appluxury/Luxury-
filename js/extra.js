@@ -17,6 +17,10 @@ Object.keys(SUB).forEach(k=>delete SUB[k]);
 Object.assign(SUB,{Relojes:'Haute Horlogerie',Gafas:'Eyewear Couture',Chaquetas:'Atelier Outerwear',Zapatillas:'Luxury Sneakers',Bolsos:'Maroquinerie'});
 SP.splice(0,SP.length,...Object.entries(DAT).flatMap(([c,[k,L]])=>L.map(([n,p,m],i)=>[c,n,`${k}-00${i+1}`,p,m])));
 
+DET[1]='Materia prima de primerísima calidad, seleccionada una a una.';
+DET[7]='Se entrega en un estuche exclusivo, con acabados de primera calidad.';
+const FIX=[['Materia prima seleccionada con trazabilidad completa.',DET[1]],['Entrega en estuche numerado con certificado de autenticidad.',DET[7]]];
+
 /* 2 · Interfaz: menú, selector del admin, dock inferior, barra de edición, marca y botón en tarjetas */
 $('#nav-cats').innerHTML=CATS.map(c=>`<li><button type="button" data-cat="${c}">${c}<small>${SUB[c]}</small></button></li>`).join('');
 $('select[name=cat]').innerHTML=CATS.map(c=>`<option>${c}</option>`).join('');
@@ -26,12 +30,14 @@ const bar=document.createElement('div');bar.id='edit-bar';bar.className='glass';
 bar.innerHTML='<b>Modo edición</b><button type="button" class="btn sm" data-eb="new">+ Pieza</button><button type="button" class="btn sm ghost" data-eb="hero">Portada y vídeo</button><button type="button" class="btn sm ghost" data-eb="conf">Ajustes</button><button type="button" class="btn sm" data-eb="pub">Publicar</button><button type="button" class="btn sm ghost" data-eb="out">Salir</button>';
 document.body.append(dock,bar);
 $('#tpl-card').content.querySelector('.card-body').insertAdjacentHTML('beforeend','<div class="row adm-only"><button type="button" class="btn sm ghost" data-ed>✎ Editar</button><button type="button" class="btn sm ghost" data-del>🗑 Eliminar</button></div>');
+$('.bezel-in').insertAdjacentHTML('beforeend','<button type="button" class="btn sm adm-only hero-add" id="hero-add">🎬 Vídeos de la portada</button>');
+$('#hero-add').onclick=()=>pan('hero');
 const brand=document.createElement('p');brand.className='logo brand';brand.setAttribute('aria-hidden','true');brand.textContent='VELARIS';$('.hero-copy').prepend(brand);
 $$('.logo').forEach(el=>{const t=el.textContent;el.classList.add('split');if(!el.hasAttribute('aria-label'))el.setAttribute('aria-label',t);
  el.innerHTML=[...t].map((c,i)=>`<span class="lt" aria-hidden="true" style="--i:${i}">${c}</span>`).join('')});
 
 /* 3 · Modo edición sobre la misma página */
-const pan=k=>{gate();show('modal-admin');adm(k);if(k==='conf')fillGh()};
+const pan=k=>{gate();show('modal-admin');adm(k);if(k==='conf')fillGh();if(k==='hero')vlist()};
 const mode=()=>{document.body.classList.toggle('edit',AUTH);bar.hidden=!AUTH;
  [['#hero-title','title'],['#hero-sub','sub']].forEach(([s,k])=>{const n=$(s);n.contentEditable=AUTH;n.onblur=()=>{if(!AUTH)return;S.cfg[k]=n.textContent.trim()||S.cfg[k];DB.save(S)}})};
 const out=()=>{AUTH=false;ED=null;hide('modal-admin');mode()};
@@ -64,12 +70,34 @@ const publish=async()=>{const g=gh();g.br=g.br||'main';
  if(!g.repo||!g.token){toast('Falta repositorio o token: rellénalos en Ajustes.');pan('conf');return}
  const up=async s=>{if(!/^data:(image|video)\//.test(s||'')||s.startsWith('data:image/svg'))return s;const b=s.slice(s.indexOf(',')+1);return put(g,`img/${hash(b)}.${s.startsWith('data:video')?'mp4':'jpg'}`,b)};
  try{toast('Publicando… no cierres esta pestaña');
-  const {user,pass,...cfg}=S.cfg;cfg.hi=await up(cfg.hi);cfg.hv=await up(cfg.hv);
+  const {user,pass,...cfg}=S.cfg;cfg.hi=await up(cfg.hi);const vv=[];for(const x of vids())vv.push(await up(x));cfg.vids=vv;cfg.hv=vv[0]||'';
   const prods=[];for(const p of S.prods){const imgs=[];for(const m of p.imgs)imgs.push({...m,src:await up(m.src)});prods.push({...p,imgs})}
   await put(g,'data/store.json',btoa(unescape(encodeURIComponent(JSON.stringify({cfg,prods})))));
-  S.prods=prods;Object.assign(S.cfg,{hi:cfg.hi,hv:cfg.hv});await DB.save(S);
+  S.prods=prods;Object.assign(S.cfg,{hi:cfg.hi,hv:cfg.hv,vids:cfg.vids});await DB.save(S);
   toast('✓ Publicado. Se verá en unos 60 segundos.')}
  catch(e){toast('No se pudo publicar (error '+e.message+'). Revisa repositorio, rama y token.')}};
+
+/* 4b · Vídeos del cuadro de portada: lista en bucle (subida directa a GitHub o enlace .mp4) */
+const hv=$('#hero-video'),PREV={};let vx=0,ve=0;
+const vids=()=>S.cfg.vids||(S.cfg.vids=S.cfg.hv?[S.cfg.hv]:[]);
+const vsync=()=>{const L=vids();S.cfg.hv=L[0]||'';hv.loop=L.length<2;vx=0};
+const vnext=()=>{const L=vids();if(L.length<2)return;vx=(vx+1)%L.length;hv.src=PREV[L[vx]]||L[vx];hv.hidden=false;hv.play().catch(()=>{})};
+hv.addEventListener('ended',vnext);hv.addEventListener('playing',()=>ve=0);hv.addEventListener('error',()=>{if(++ve<vids().length)vnext()});
+const vlist=()=>{$('#vl').innerHTML=vids().map((x,i)=>`<li><span>Vídeo ${i+1}<small>${E(x.startsWith('data:')?'archivo del dispositivo':x)}</small></span><button type="button" class="btn sm ghost" data-vx="${i}" aria-label="Quitar vídeo ${i+1}">✕</button></li>`).join('')||'<li class="empty">Sin vídeos: se muestra la imagen de portada.</li>'};
+const vapply=async()=>{vsync();await DB.save(S);rdr();const p=PREV[S.cfg.hv];if(p&&hv.src!==p){hv.src=p;hv.play().catch(()=>{})}vlist()};
+$('[data-adm=hero]').addEventListener('click',vlist);
+$('#vl').addEventListener('click',e=>{const b=e.target.closest('[data-vx]');if(!b)return;vids().splice(+b.dataset.vx,1);vapply()});
+$('#vu').onclick=()=>{const u=(prompt('Pega el enlace directo del vídeo (https://…/archivo.mp4)')||'').trim();if(!u)return;
+ if(/youtu|vimeo/i.test(u))return toast('YouTube y Vimeo no valen: usa un archivo .mp4 o súbelo aquí.');
+ if(!/^https:\/\//i.test(u))return toast('El enlace debe empezar por https://');vids().push(u);vapply()};
+$('#vf').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+ const g=gh();g.br=g.br||'main';
+ if(!g.repo||!g.token){toast('Para subir archivos configura GitHub en Ajustes (o añade un enlace).');return}
+ if(f.size>40e6){toast('Pesa más de 40 MB: comprímelo a MP4 (H.264) y vuelve a probar.');return}
+ try{toast('Subiendo vídeo… no cierres esta pestaña');const u=await rd(f),b=u.slice(u.indexOf(',')+1);
+  const p=await put(g,`video/${Date.now().toString(36)}-${(f.name.replace(/[^\w.]+/g,'-')||'video.mp4').slice(-40)}`,b);
+  PREV[p]=URL.createObjectURL(f);vids().push(p);await vapply();toast('✓ Vídeo subido. Pulsa Publicar para que lo vean todos.')}
+ catch(err){toast('No se pudo subir (error '+err.message+'). Revisa repositorio y token.')}});
 
 /* 5 · Arranque: borrador local del admin → contenido publicado → ejemplo */
 (async()=>{let d=await DB.load();
@@ -77,5 +105,6 @@ const publish=async()=>{const g=gh();g.br=g.br||'main';
  S=d&&d.prods?d:seed();S.cfg={...seed().cfg,...S.cfg};
  if(S.cfg.tpl===TPL)S.cfg.tpl='💎 '+TPL+' 🙏';
  if(S.cfg.intro===INTRO)S.cfg.intro='💎 '+INTRO;
- rdr();mode();sync()})();
+ S.prods.forEach(p=>p.imgs.forEach(m=>FIX.forEach(([a,b])=>{if(m.txt&&m.txt.includes(a))m.txt=m.txt.replace(a,b)})));
+ vsync();rdr();mode();sync()})();
 })();
