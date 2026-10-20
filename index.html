@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>VELARIS — Ultra Boutique</title>
-<meta name="description" content="VELARIS: relojes, chaquetas, camisetas, gafas y accesorios de ultra lujo. Servicio Concierge VIP por WhatsApp.">
+<meta name="description" content="VELARIS: relojes, gafas, chaquetas, zapatillas y bolsos de ultra lujo. Servicio Concierge VIP por WhatsApp.">
 <meta property="og:type" content="website"><meta property="og:site_name" content="VELARIS">
 <meta property="og:title" content="VELARIS — Ultra Boutique"><meta property="og:description" content="Piezas exclusivas con atención privada de Concierge VIP.">
 <meta name="theme-color" content="#050505"><meta name="color-scheme" content="dark">
@@ -25,10 +25,10 @@
   <nav aria-label="Categorías">
     <ul id="nav-cats">
       <li><button type="button" data-cat="Relojes">Relojes<small>Haute Horlogerie</small></button></li>
-      <li><button type="button" data-cat="Chaquetas">Chaquetas<small>Atelier Outerwear</small></button></li>
-      <li><button type="button" data-cat="Camisetas">Camisetas<small>Essential Luxury</small></button></li>
       <li><button type="button" data-cat="Gafas">Gafas<small>Eyewear Couture</small></button></li>
-      <li><button type="button" data-cat="Accesorios">Accesorios<small>Leather &amp; Fine Goods</small></button></li>
+      <li><button type="button" data-cat="Chaquetas">Chaquetas<small>Atelier Outerwear</small></button></li>
+      <li><button type="button" data-cat="Zapatillas">Zapatillas<small>Luxury Sneakers</small></button></li>
+      <li><button type="button" data-cat="Bolsos">Bolsos<small>Maroquinerie</small></button></li>
     </ul>
   </nav>
   <div class="nav-actions">
@@ -171,7 +171,7 @@
         <form id="adm-form" hidden>
           <h3 class="gt" id="adm-form-title">Editar pieza</h3>
           <div class="fg">
-            <label>Categoría<select name="cat"><option>Relojes</option><option>Chaquetas</option><option>Camisetas</option><option>Gafas</option><option>Accesorios</option></select></label>
+            <label>Categoría<select name="cat"><option>Relojes</option><option>Gafas</option><option>Chaquetas</option><option>Zapatillas</option><option>Bolsos</option></select></label>
             <label>Nombre<input name="name" required></label>
             <label>Referencia (SKU)<input name="sku" required></label>
             <label>Precio<input name="price" type="number" min="0" step="1" required></label>
@@ -233,5 +233,6 @@
 
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 <script src="js/app.js" defer></script>
+<script src="js/extra.js" defer></script>
 </body>
 </html>
