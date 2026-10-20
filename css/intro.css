@@ -1,6 +1,6 @@
-/* VELARIS — intro.css · Apertura de lujo: oro líquido, guilloché y firma letra a letra */
+/* VELARIS — intro.css · Apertura de lujo (versión optimizada: solo transform/opacity en animaciones) */
 #vi{--g2:#D4AF37;--g3:#F8E7A1;--g4:#FFFBE8;--foil:linear-gradient(100deg,#5C451C 0%,#A8842C 12%,#D4AF37 28%,#F8E7A1 42%,#FFFBE8 50%,#F8E7A1 58%,#D4AF37 72%,#A8842C 88%,#5C451C 100%);--ex:cubic-bezier(.19,1,.22,1);
- position:fixed;inset:0;z-index:1000;overflow:hidden;touch-action:none;overscroll-behavior:contain;background:radial-gradient(130% 100% at 50% 38%,#0d0a06 0%,#070503 46%,#030202 100%);transition:opacity 1.2s ease,visibility 0s 1.2s;animation:vFail 0s 16s forwards}
+ position:fixed;inset:0;z-index:1000;overflow:hidden;touch-action:none;overscroll-behavior:contain;contain:layout paint;background:radial-gradient(130% 100% at 50% 38%,#0d0a06 0%,#070503 46%,#030202 100%);transition:opacity 1.2s ease,visibility 0s 1.2s;animation:vFail 0s 16s forwards}
 #vi *{box-sizing:border-box;margin:0;padding:0}
 #vi.out{opacity:0;visibility:hidden;pointer-events:none}
 .vs #vi{display:none}
@@ -9,17 +9,17 @@
 @media(prefers-reduced-motion:reduce){#vi{display:none}.vi-on .hero-copy h1{animation-play-state:running}}
 #vfx{position:absolute;inset:0;width:100%;height:100%}
 
-/* Grabado guilloché */
-.vguil{position:absolute;left:50%;top:50%;width:min(158vmin,1500px);aspect-ratio:1;transform:translate(-50%,-50%);opacity:0;pointer-events:none}
-.vguil svg{width:100%;height:100%;animation:vSpin 180s linear infinite}
+/* Grabado guilloché (estático: antes giraba un SVG enorme a 7% de opacidad, casi invisible y muy costoso) */
+.vguil{position:absolute;left:50%;top:50%;width:min(158vmin,1500px);aspect-ratio:1;transform:translate(-50%,-50%);opacity:0;pointer-events:none;will-change:opacity}
+.vguil svg{width:100%;height:100%}
 .vguil circle{fill:none;stroke:rgba(212,175,55,.5)}
 #vi.p2 .vguil{animation:vGuil 4s var(--ex) forwards}
-@keyframes vSpin{to{transform:rotate(360deg)}}
 @keyframes vGuil{to{opacity:.07}}
+@media(max-width:700px){.vguil{width:130vmin}}
 
 /* Resplandor cálido y bloom final */
-.vglow,.vbloom{position:absolute;left:50%;top:50%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;opacity:0}
-.vglow{width:min(92vmin,940px);background:radial-gradient(circle,rgba(248,231,161,.14) 0%,rgba(212,175,55,.055) 34%,transparent 66%)}
+.vglow,.vbloom{position:absolute;left:50%;top:50%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;opacity:0;will-change:transform,opacity}
+.vglow{width:min(92vmin,940px);background:radial-gradient(circle,rgba(248,231,161,.16) 0%,rgba(212,175,55,.065) 34%,transparent 66%)}
 .vbloom{width:min(126vmin,1160px);background:radial-gradient(circle,rgba(255,251,232,.16),rgba(212,175,55,.06) 40%,transparent 68%)}
 #vi.p4 .vglow{animation:vGlowIn 3s var(--ex) forwards,vBreathe 9s 3.4s ease-in-out infinite alternate}
 #vi.p6 .vbloom{animation:vBloom 3s var(--ex) forwards,vBreathe 9s 3.4s ease-in-out infinite alternate}
@@ -28,7 +28,7 @@
 @keyframes vBloom{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}35%{opacity:1}100%{opacity:.6;transform:translate(-50%,-50%) scale(1)}}
 
 /* Marco doble con esquinas grabadas */
-.vframe{position:absolute;inset:clamp(14px,3.2vmin,30px);border:1px solid rgba(212,175,55,.26);opacity:0;pointer-events:none}
+.vframe{position:absolute;inset:clamp(14px,3.2vmin,30px);border:1px solid rgba(212,175,55,.26);opacity:0;pointer-events:none;will-change:transform,opacity}
 .vframe::before{content:'';position:absolute;inset:6px;border:1px solid rgba(212,175,55,.10)}
 .vframe i{position:absolute;width:36px;height:36px;opacity:0}
 .vframe i::before,.vframe i::after{content:'';position:absolute;background:linear-gradient(90deg,var(--g2),var(--g4))}
@@ -47,9 +47,8 @@
 @keyframes vFade{to{opacity:.95}}
 @keyframes vDot{to{transform:rotate(45deg) scale(1)}}
 
-/* Escenario */
-.vstage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(20px,4.4vmin,38px);padding:0 18px;animation:vKen 9s var(--ex) both}
-@keyframes vKen{from{transform:scale(1.075)}to{transform:scale(1)}}
+/* Escenario (sin Ken Burns: escalar una capa con texto obligaba a re-rasterizar todo cada frame) */
+.vstage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(20px,4.4vmin,38px);padding:0 18px}
 
 /* Emblema V */
 .vemb{position:relative;width:clamp(66px,11vmin,104px);aspect-ratio:1}
@@ -64,24 +63,17 @@
 #vi.p4 .vemb .dot{animation:vDot .9s .1s var(--ex) forwards}
 @keyframes vDraw{to{stroke-dashoffset:0}}
 @keyframes vRing2{to{transform:rotate(360deg)}}
-.vhalo{position:absolute;inset:-46%;border-radius:50%;background:radial-gradient(circle,rgba(255,251,232,.26),rgba(248,231,161,.09) 40%,transparent 68%);opacity:0}
+.vhalo{position:absolute;inset:-46%;border-radius:50%;background:radial-gradient(circle,rgba(255,251,232,.26),rgba(248,231,161,.09) 40%,transparent 68%);opacity:0;will-change:transform,opacity}
 #vi.p4 .vhalo{animation:vHalo 3s .1s ease-out forwards}
 @keyframes vHalo{0%{opacity:0;transform:scale(.55)}30%{opacity:1}100%{opacity:0;transform:scale(1.7)}}
 
-/* VELARIS: letra a letra, oro vivo */
-.vword{perspective:900px;font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:clamp(2.3rem,10vw,8.6rem);line-height:1.04;letter-spacing:.46em;text-indent:.46em;display:flex;justify-content:center;white-space:nowrap}
-.vword span{display:inline-block;background:var(--foil);background-size:260% 100%;background-position:168% 0;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;opacity:0;transform:translateY(.62em) scale(1.045);filter:blur(15px);transform-origin:50% 100%}
-#vi.p4 .vword{animation:vTrack 3s var(--ex) both}
-@keyframes vTrack{to{letter-spacing:.26em;text-indent:.26em}}
-#vi.p4 .vword span{animation:
-vLetter 1.3s calc(var(--i)*.115s) var(--ex) both,
-vSweep 1.7s calc(var(--i)*.115s + .38s) cubic-bezier(.5,0,.22,1) both,
-vGlowP 2.4s calc(var(--i)*.115s + .85s) ease-out both,
-vIdle 7s calc(var(--i)*.115s + 2.8s) ease-in-out infinite alternate}
-@keyframes vLetter{0%{opacity:0;transform:translateY(.62em) scale(1.045);filter:blur(15px)}55%{opacity:1}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
-@keyframes vSweep{from{background-position:168% 0}to{background-position:50% 0}}
-@keyframes vGlowP{0%{filter:blur(0) drop-shadow(0 0 0 rgba(212,175,55,0))}32%{filter:blur(0) drop-shadow(0 0 26px rgba(248,231,161,.55))}100%{filter:blur(0) drop-shadow(0 0 13px rgba(212,175,55,.20))}}
-@keyframes vIdle{from{background-position:50% 0}to{background-position:60% 0}}
+/* VELARIS: letra a letra.
+   Antes: blur + drop-shadow + background-position + letter-spacing animados (todo repinta/relayout cada frame).
+   Ahora: solo opacity + transform (GPU). El oro es un degradado fijo por letra. */
+.vword{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:clamp(2.3rem,10vw,8.6rem);line-height:1.04;letter-spacing:.3em;text-indent:.3em;display:flex;justify-content:center;white-space:nowrap}
+.vword span{display:inline-block;background:var(--foil);background-size:260% 100%;background-position:50% 0;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;opacity:0;transform:translate3d(0,.5em,0) scale(1.04);transform-origin:50% 100%;will-change:transform,opacity}
+#vi.p4 .vword span{animation:vLetter 1.5s calc(var(--i)*.115s) var(--ex) both}
+@keyframes vLetter{0%{opacity:0;transform:translate3d(0,.5em,0) scale(1.04)}60%{opacity:1}100%{opacity:1;transform:translate3d(0,0,0) scale(1)}}
 
 /* Divisor con diamante */
 .vdiv{display:flex;align-items:center;gap:14px;opacity:0}
@@ -94,9 +86,8 @@ vIdle 7s calc(var(--i)*.115s + 2.8s) ease-in-out infinite alternate}
 #vi.p5 .vdiv .dia{animation:vDot 1s .6s var(--ex) forwards}
 @keyframes vLine{to{width:clamp(60px,14vw,140px)}}
 
-/* Grano, viñeta y botón */
-.vgrain{position:absolute;inset:-60px;pointer-events:none;opacity:.045;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:vGrain 1.2s steps(4) infinite}
-@keyframes vGrain{0%{transform:translate(0,0)}25%{transform:translate(-16px,10px)}50%{transform:translate(12px,-14px)}75%{transform:translate(-8px,-8px)}100%{transform:translate(0,0)}}
+/* Grano ESTÁTICO (antes: animado + mix-blend-mode:overlay a pantalla completa = lo más pesado de todo) */
+.vgrain{position:absolute;inset:0;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 .vvig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(118% 96% at 50% 50%,transparent 50%,rgba(0,0,0,.84) 100%)}
 #vskip{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom));right:calc(26px + env(safe-area-inset-right));z-index:20;background:none;border:0;color:rgba(212,175,55,.7);font:500 .6rem/1 var(--sans,system-ui,sans-serif);letter-spacing:.46em;text-transform:uppercase;padding:12px 2px;border-bottom:1px solid rgba(212,175,55,.4);cursor:pointer;transition:color .4s,border-color .4s}
 #vskip:hover{color:var(--g4);border-color:var(--g4)}
