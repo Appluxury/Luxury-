@@ -1,231 +1,62 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
+<html lang="es"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>VELARIS — Ultra Boutique</title>
-<meta name="description" content="VELARIS: relojes, chaquetas, camisetas, gafas y accesorios de ultra lujo. Servicio Concierge VIP por WhatsApp.">
-<meta property="og:type" content="website"><meta property="og:site_name" content="VELARIS">
-<meta property="og:title" content="VELARIS — Ultra Boutique"><meta property="og:description" content="Piezas exclusivas con atención privada de Concierge VIP.">
-<meta name="theme-color" content="#050505"><meta name="color-scheme" content="dark">
-<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="VELARIS">
+<title>VELARIS</title>
+<meta name="description" content="Relojes, chaquetas, gafas, zapatos y accesorios de alta gama. Atención privada por WhatsApp.">
+<meta property="og:type" content="website"><meta property="og:title" content="VELARIS">
+<meta name="theme-color" content="#07130f"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&family=Manrope:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/luxe.css">
-</head>
-<body>
-<canvas id="cosmos" aria-hidden="true"></canvas>
-<div id="glow" aria-hidden="true"></div>
-<a class="skip" href="#catalogo">Ir al catálogo</a>
-
-<header class="nav glass">
-  <a class="logo gt" href="#top" aria-label="VELARIS, inicio">VELARIS</a>
-  <nav aria-label="Categorías">
-    <ul id="nav-cats">
-      <li><button type="button" data-cat="Relojes">Relojes<small>Haute Horlogerie</small></button></li>
-      <li><button type="button" data-cat="Chaquetas">Chaquetas<small>Atelier Outerwear</small></button></li>
-      <li><button type="button" data-cat="Camisetas">Camisetas<small>Essential Luxury</small></button></li>
-      <li><button type="button" data-cat="Gafas">Gafas<small>Eyewear Couture</small></button></li>
-      <li><button type="button" data-cat="Accesorios">Accesorios<small>Leather &amp; Fine Goods</small></button></li>
-    </ul>
-  </nav>
-  <div class="nav-actions">
-    <button type="button" class="btn sm ghost" id="btn-order">Pedido VIP <b id="order-count">0</b></button>
-    <button type="button" class="btn sm ghost" id="btn-admin">Admin</button>
-  </div>
-</header>
-
+</head><body>
+<p class="ann dk" data-k="ann"></p>
+<header class="nav dk"><a class="logo" href="#top" data-k="brand"></a><nav id="nav" aria-label="Colecciones"></nav><div class="acts"><button class="btn sm ghost" id="b-ord">Pedido <b id="oc">0</b></button><button class="btn sm" id="b-wa">WhatsApp</button></div></header>
 <main id="top">
-  <section class="hero" aria-labelledby="hero-title">
-    <div class="hero-frame">
-      <div class="bezel"><div class="bezel-in">
-        <div id="hero-fallback" class="hero-img" role="img" aria-label="Imagen editorial de VELARIS"></div>
-        <video id="hero-video" autoplay loop muted playsinline preload="auto" aria-hidden="true"></video>
-        <div class="hero-gold" aria-hidden="true"></div>
-        <div class="hero-copy">
-          <p class="eyebrow" id="hero-sub">Ultra Boutique · Colección Privada</p>
-          <h1 class="gt" id="hero-title">El arte de lo irrepetible</h1>
-          <a class="btn" href="#catalogo">Explorar colecciones</a>
-        </div>
-      </div></div>
-    </div>
-  </section>
-
-  <section id="catalogo" class="catalog" aria-labelledby="cat-title">
-    <header class="sec-head">
-      <h2 id="cat-title">Colecciones</h2>
-      <div id="cat-tabs" class="tabs" role="tablist" aria-label="Filtrar por categoría"></div>
-    </header>
-    <div id="grid" class="grid" role="list"></div>
-    <p id="grid-empty" class="empty" hidden>No hay piezas en esta colección todavía.</p>
-  </section>
-
-  <section class="concierge" aria-labelledby="conc-title">
-    <div class="glass conc-card">
-      <p class="eyebrow">Servicio Concierge VIP</p>
-      <h2 id="conc-title">Cada pieza se reserva en privado</h2>
-      <p>No hay carrito ni pago en línea. Nuestro Concierge le atiende por WhatsApp para personalización, reserva y entrega.</p>
-      <button type="button" class="btn" id="btn-conc">Hablar con el Concierge</button>
-    </div>
-  </section>
+<section class="hero dk"><div class="hm" id="hi"></div><video id="hv" autoplay loop muted playsinline preload="metadata" hidden></video><div class="hs"></div>
+<div class="hc"><h1 data-k="title"></h1><p class="hsub" data-k="sub"></p><a class="btn gold" href="#cat">Ver la colección</a></div></section>
+<section class="trust dk" id="trust"></section>
+<section class="sec" id="cat"><header class="sh"><h2>Colecciones</h2><div class="tabs" id="tabs"></div></header><div class="grid" id="grid"></div><p class="mut" id="empty" hidden>Próximamente nuevas piezas.</p></section>
+<section class="band dk" id="how"><div class="sec"><h2>Del atelier a su puerta</h2><p class="dl"><span>Entrega en</span> <b data-k="del"></b></p><ol class="steps" id="steps"></ol></div></section>
+<section class="sec" id="revs" hidden><header class="sh"><h2>Opiniones de clientes</h2><p class="rsum" id="rsum"></p></header><div class="rl" id="rlist"></div></section>
+<section class="band dk"><div class="sec cc"><h2>Cada pieza se reserva en privado</h2><p>No hay carrito ni pago en línea. Un asesor le atiende por WhatsApp con precios, personalización y entrega.</p><button class="btn gold" id="b-cc">Hablar con un asesor</button></div></section>
 </main>
+<footer class="foot dk"><p class="logo" data-k="brand"></p><p>Entrega en <span data-k="del"></span></p><button class="lnk" id="b-adm">Acceso privado</button></footer>
+<button class="fab" id="fab">WhatsApp</button>
 
-<footer class="foot"><p class="logo gt">VELARIS</p><p class="eyebrow">Atelier privado · Pedidos por WhatsApp</p></footer>
+<div id="mp" class="ov" role="dialog" aria-modal="true" aria-labelledby="pn" hidden><div class="pm">
+<button class="x" data-x aria-label="Cerrar">✕</button>
+<div class="gw"><div class="gs" id="gs"><img id="gi" alt=""><button class="ga l" id="gp" aria-label="Anterior">‹</button><button class="ga r" id="gn" aria-label="Siguiente">›</button><span class="gc" id="gc"></span></div><div class="gt" id="gt"></div></div>
+<div class="pi"><p class="eb" id="pc"></p><h2 id="pn"></h2><p class="pr"><span id="pp"></span><small id="pk"></small></p><p class="rt" id="prt"></p><p id="pd"></p>
+<p class="dn">Entrega en <b data-k="del"></b>, con atención privada por WhatsApp.</p>
+<div class="row"><button class="btn" id="pw">Consultar por WhatsApp</button><button class="btn ghost" id="pa">Añadir al pedido</button></div><div class="prv" id="prv"></div></div></div></div>
 
-<template id="tpl-card">
-  <article class="card glass" role="listitem">
-    <figure class="card-img" data-open tabindex="0" role="button">
-      <img alt="" loading="lazy" decoding="async">
-      <span class="badge" hidden>Agotado</span>
-    </figure>
-    <div class="card-body">
-      <p class="eyebrow" data-cat></p>
-      <h3 data-name></h3>
-      <p class="price"><span data-price></span><small data-sku></small></p>
-      <button type="button" class="btn" data-wa>Solicitar Atelier / WhatsApp VIP</button>
-      <div class="row"><button type="button" class="btn sm ghost" data-open>Ver pieza</button><button type="button" class="btn sm ghost" data-add>+ Pedido</button></div>
-    </div>
-  </article>
-</template>
+<div id="mo" class="ov" role="dialog" aria-modal="true" aria-label="Pedido" hidden><div class="od">
+<button class="x" data-x aria-label="Cerrar">✕</button><h2>Su pedido</h2>
+<ul class="ol" id="ol"></ul><p class="mut" id="oe">Todavía no ha añadido ninguna pieza.</p><p class="tot" id="ot"></p>
+<div class="row"><button class="btn" id="os">Enviar por WhatsApp</button><button class="btn ghost" id="ox">Vaciar</button></div></div></div>
 
-<div id="modal-product" class="ov" role="dialog" aria-modal="true" aria-labelledby="pm-name" hidden>
-  <div class="pm glass">
-    <button type="button" class="x" data-close aria-label="Cerrar">✕</button>
-    <div class="pm-gal">
-      <div class="stage" id="gal-stage" tabindex="0" role="button" aria-label="Ampliar imagen">
-        <img id="gal-img" alt="">
-        <button type="button" class="ar l" id="gal-prev" aria-label="Anterior">‹</button>
-        <button type="button" class="ar r" id="gal-next" aria-label="Siguiente">›</button>
-        <span class="count" id="gal-count"></span>
-      </div>
-      <div class="thumbs" id="gal-thumbs"></div>
-    </div>
-    <div class="pm-info">
-      <p class="eyebrow" id="pm-cat"></p>
-      <h2 id="pm-name"></h2>
-      <p class="price"><span id="pm-price"></span><small id="pm-sku"></small></p>
-      <p class="fade" id="gal-desc" aria-live="polite"></p>
-      <div class="row"><button type="button" class="btn" id="pm-wa">Solicitar Atelier / WhatsApp VIP</button><button type="button" class="btn ghost" id="pm-add">+ Pedido</button></div>
-    </div>
-  </div>
-</div>
+<div id="ma" class="ov" role="dialog" aria-modal="true" aria-label="Panel privado" hidden><div class="adm">
+<button class="x" data-x aria-label="Cerrar">✕</button>
+<form id="lf" class="login" autocomplete="off"><h2>Acceso privado</h2><label>Usuario<input id="lu" autocomplete="off" autocapitalize="off" required></label><label>Contraseña<input id="lp" type="password" autocomplete="off" required></label><p class="err" id="le" hidden>Usuario o contraseña incorrectos.</p><button class="btn">Entrar</button></form>
+<div id="ap" hidden>
+<div class="ah"><b>Panel</b><div class="tabs"><button class="tab on" data-a="p">Piezas</button><button class="tab" data-a="h">Portada</button><button class="tab" data-a="r">Reseñas</button><button class="tab" data-a="t">Textos</button><button class="tab" data-a="s">Ajustes</button></div><button class="btn sm ghost" id="lo">Salir</button></div>
 
-<div id="lightbox" class="ov lb" role="dialog" aria-modal="true" aria-label="Visor de imagen" hidden>
-  <button type="button" class="x" data-close aria-label="Cerrar visor">✕</button>
-  <div class="lb-stage" id="lb-stage"><img id="lb-img" alt="" draggable="false"></div>
-  <button type="button" class="ar l" id="lb-prev" aria-label="Anterior">‹</button>
-  <button type="button" class="ar r" id="lb-next" aria-label="Siguiente">›</button>
-  <div class="lb-bar glass">
-    <div class="lb-tools"><button type="button" class="btn sm ghost" id="lb-zout" aria-label="Alejar">−</button><button type="button" class="btn sm ghost" id="lb-zreset">1×</button><button type="button" class="btn sm ghost" id="lb-zin" aria-label="Acercar">+</button><span class="count" id="lb-count"></span></div>
-    <div class="thumbs" id="lb-thumbs"></div>
-    <p class="fade" id="lb-desc" aria-live="polite"></p>
-    <button type="button" class="btn" id="lb-wa">Solicitar Atelier / WhatsApp VIP</button>
-  </div>
-</div>
+<section id="a-p" class="av"><div id="pl"><div class="row"><button class="btn" id="new">Nueva pieza</button></div><ul class="ol" id="pls"></ul></div>
+<form id="pf" hidden><h3 id="pft"></h3><div class="fg"><label>Colección<select name="cat"></select></label><label>Nombre<input name="name" required></label><label>Referencia<input name="sku" required></label><label>Precio<input name="price" type="number" min="0" required></label><label>Divisa<select name="cur"><option>EUR</option><option>USD</option><option>GBP</option><option>CHF</option></select></label><label>Unidades en stock<input name="stock" type="number" min="0"></label><label class="w">Descripción<textarea name="desc" rows="3"></textarea></label></div>
+<h4>Fotos (hasta 6)</h4><ul class="sl" id="sl"></ul><div class="row"><button class="btn">Guardar pieza</button><button type="button" class="btn ghost" id="cancel">Cancelar</button></div></form></section>
 
-<div id="modal-order" class="ov" role="dialog" aria-modal="true" aria-labelledby="od-title" hidden>
-  <div class="od glass">
-    <button type="button" class="x" data-close aria-label="Cerrar">✕</button>
-    <h2 class="gt" id="od-title">Resumen de Pedido VIP</h2>
-    <ul id="order-list" class="olist"></ul>
-    <p class="empty" id="order-empty">Su selección está vacía.</p>
-    <p class="total" id="order-total" hidden></p>
-    <div class="row"><button type="button" class="btn" id="order-send">Procesar Pedido Demo</button><button type="button" class="btn ghost" id="order-clear">Vaciar</button></div>
-  </div>
-</div>
+<section id="a-h" class="av" hidden><h3>Portada</h3><div class="fg"><label>Mostrar en la portada<select id="hm"><option value="image">Imagen</option><option value="video">Vídeo</option></select></label><label>Vídeo por URL o ruta (ej. assets/portada.mp4)<input id="hu" inputmode="url"></label><label>Imagen por URL o ruta<input id="hn" inputmode="url"></label></div>
+<div class="row"><label class="btn">Subir vídeo<input id="hvf" type="file" accept="video/*" hidden></label><button class="btn ghost" id="hvd">Quitar vídeo</button><label class="btn">Subir imagen<input id="hif" type="file" accept="image/*" hidden></label><button class="btn ghost" id="hid">Quitar imagen</button></div><p class="mut" id="hst"></p></section>
 
-<div id="modal-admin" class="ov" role="dialog" aria-modal="true" aria-labelledby="ad-title" hidden>
-  <div class="adm glass">
-    <button type="button" class="x" data-close aria-label="Cerrar panel">✕</button>
+<section id="a-r" class="av" hidden><h3>Reseñas</h3><p class="mut">Añada solo opiniones reales de clientes, con su permiso. Marque «Compra verificada» únicamente si corresponde a un pedido real.</p>
+<form id="rf" class="fg"><label>Pieza<select name="pid" id="rp"></select></label><label>Cliente<input name="name" required></label><label>Estrellas<select name="stars"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></label><label>Fecha<input name="date" id="rd"></label><label class="w">Opinión<textarea name="txt" rows="3" required></textarea></label><label class="ck"><input type="checkbox" name="ver"> Compra verificada</label><button class="btn">Añadir reseña</button></form><ul class="ol" id="rls"></ul></section>
 
-    <form id="admin-login" class="login" autocomplete="off">
-      <h2 class="gt" id="ad-title">Acceso privado</h2>
-      <label>Usuario<input id="lg-user" name="user" autocomplete="off" autocapitalize="off" required></label>
-      <label>Contraseña<input id="lg-pass" name="pass" type="password" autocomplete="off" required></label>
-      <p class="err" id="lg-err" role="alert" hidden>Credenciales incorrectas.</p>
-      <button type="submit" class="btn">Entrar</button>
-    </form>
+<section id="a-t" class="av" hidden><h3>Textos de la web</h3><p class="mut">Cambie cualquier texto. En garantías y pasos separe el título y el texto con una barra vertical (|).</p><div class="fg" id="tf"></div></section>
 
-    <div id="admin-panel" hidden>
-      <header class="adm-head">
-        <b class="logo gt">VELARIS · Panel</b>
-        <div class="tabs" role="tablist" aria-label="Secciones del panel">
-          <button type="button" class="tab on" data-adm="prods" role="tab">Piezas</button>
-          <button type="button" class="tab" data-adm="hero" role="tab">Portada</button>
-          <button type="button" class="tab" data-adm="conf" role="tab">Ajustes</button>
-        </div>
-        <button type="button" class="btn sm ghost" id="adm-logout">Cerrar sesión</button>
-      </header>
-
-      <section id="adm-prods" class="adm-view">
-        <div id="adm-listbox">
-          <div class="row"><button type="button" class="btn" id="adm-new">+ Nueva pieza</button></div>
-          <ul id="adm-list" class="olist"></ul>
-        </div>
-        <form id="adm-form" hidden>
-          <h3 class="gt" id="adm-form-title">Editar pieza</h3>
-          <div class="fg">
-            <label>Categoría<select name="cat"><option>Relojes</option><option>Chaquetas</option><option>Camisetas</option><option>Gafas</option><option>Accesorios</option></select></label>
-            <label>Nombre<input name="name" required></label>
-            <label>Referencia (SKU)<input name="sku" required></label>
-            <label>Precio<input name="price" type="number" min="0" step="1" required></label>
-            <label>Divisa<select name="cur"><option>EUR</option><option>USD</option><option>GBP</option><option>CHF</option></select></label>
-            <label>Unidades en stock<input name="stock" type="number" min="0" step="1"></label>
-            <label class="w">Descripción general<textarea name="desc" rows="3"></textarea></label>
-          </div>
-          <h3>Galería · 8 ranuras</h3>
-          <ol id="slots" class="slots"></ol>
-          <div class="row"><button type="submit" class="btn">Guardar pieza</button><button type="button" class="btn ghost" id="adm-cancel">Cancelar</button></div>
-        </form>
-      </section>
-
-      <section id="adm-hero" class="adm-view" hidden>
-        <h3 class="gt">Portada de VELARIS</h3>
-        <div class="fg">
-          <label class="w">Título<input id="hr-title"></label>
-          <label class="w">Subtítulo<input id="hr-sub"></label>
-          <label class="w">Vídeo por URL (opcional)<input id="hr-url" inputmode="url" placeholder="https://…/showreel.mp4"></label>
-        </div>
-        <div class="row">
-          <label class="btn">Subir / Cambiar vídeo<input id="hr-video" type="file" accept="video/*" hidden></label>
-          <button type="button" class="btn ghost" id="hr-video-del">Quitar vídeo</button>
-          <label class="btn">Subir / Cambiar imagen<input id="hr-img" type="file" accept="image/*" hidden></label>
-          <button type="button" class="btn ghost" id="hr-img-del">Quitar imagen</button>
-        </div>
-        <p class="note" id="hr-status"></p>
-      </section>
-
-      <section id="adm-conf" class="adm-view" hidden>
-        <h3 class="gt">Concierge y acceso</h3>
-        <div class="fg">
-          <label>WhatsApp (con prefijo, sin +)<input id="cf-phone" inputmode="tel"></label>
-          <label>Usuario del panel<input id="cf-user" autocomplete="off"></label>
-          <label>Contraseña del panel<input id="cf-pass" autocomplete="off"></label>
-          <label class="w">Mensaje por pieza (usa {nombre}, {sku} y {categoria})<textarea id="cf-tpl" rows="4"></textarea></label>
-          <label class="w">Introducción del pedido VIP<textarea id="cf-intro" rows="2"></textarea></label>
-        </div>
-        <button type="button" class="btn" id="cf-save">Guardar ajustes</button>
-        <button type="button" class="btn ghost" id="cf-reset">Restaurar datos de ejemplo</button>
-      </section>
-    </div>
-  </div>
-</div>
-
-<template id="tpl-slot">
-  <li class="slot">
-    <div class="slot-prev"><img alt="" hidden><span class="slot-empty">Vacía</span></div>
-    <p class="slot-n">Foto <b></b></p>
-    <div class="slot-btns">
-      <label class="btn sm">Subir / Cambiar<input type="file" accept="image/*" hidden data-slot-file></label>
-      <button type="button" class="btn sm ghost" data-slot-up aria-label="Mover antes">↑</button>
-      <button type="button" class="btn sm ghost" data-slot-down aria-label="Mover después">↓</button>
-      <button type="button" class="btn sm ghost" data-slot-del>Eliminar</button>
-    </div>
-    <label>Descripción de esta foto<textarea rows="3" data-slot-txt></textarea></label>
-  </li>
-</template>
-
+<section id="a-s" class="av" hidden><h3>Ajustes</h3><div class="fg"><label>WhatsApp (con prefijo, sin +)<input id="c-phone" inputmode="tel"></label><label>Usuario del panel<input id="c-user" autocomplete="off"></label><label>Contraseña del panel<input id="c-pass" autocomplete="off"></label><label class="w">Mensaje por pieza ({nombre}, {sku}, {categoria})<textarea id="c-tpl" rows="3"></textarea></label><label class="w">Introducción del pedido<textarea id="c-intro" rows="2"></textarea></label></div><div class="row"><button class="btn" id="cs">Guardar ajustes</button></div>
+<h3>Publicar para todos</h3><p class="mut">Los cambios se guardan en este dispositivo. Para que los vea todo el mundo, pulse «Exportar» y suba el archivo store.json a la carpeta data de su GitHub.</p><div class="row"><button class="btn" id="ce">Exportar store.json</button><label class="btn ghost">Importar<input id="ci" type="file" accept=".json,application/json" hidden></label><button class="btn ghost" id="cr">Restaurar ejemplo</button></div></section>
+</div></div></div>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 <script src="js/app.js" defer></script>
-</body>
-</html>
+</body></html>
