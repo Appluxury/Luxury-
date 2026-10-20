@@ -29,3 +29,6 @@ body.edit .adm-only{display:flex!important}
 #edit-bar{position:fixed;left:50%;bottom:calc(88px + var(--sb));transform:translateX(-50%);z-index:46;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;padding:10px 14px;width:max-content;max-width:calc(100% - 20px);border-radius:24px}
 #edit-bar b{font:300 14px var(--serif);letter-spacing:.14em;color:var(--g3)}
 body.edit [contenteditable=true]{outline:1px dashed rgba(230,202,101,.7);outline-offset:8px;caret-color:var(--g3);cursor:text}
+
+/* Botón de vídeos sobre el cuadro de portada (solo en modo edición) */
+.hero-add{position:absolute;top:16px;right:16px;z-index:4}
